@@ -1,0 +1,6 @@
+---
+# defaults file for ansible-role-nodejs
+repo_url: "https://github.com/franklin-tutorials/quiz-ansible.git"
+app_dir: "/opt/quiz-ansible"
+nodejs_version: "23.x"
+serve_port: 3000

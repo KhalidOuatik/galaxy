@@ -1,0 +1,56 @@
+---
+# tasks file for ansible-role-nodejs
+- name: Détecter la famille de l'OS
+  ansible.builtin.set_fact:
+    is_debian: "{{ ansible_facts['os_family'] == 'Debian' }}"
+    is_redhat: "{{ ansible_facts['os_family'] == 'RedHat' }}"
+
+- name: Désinstaller curl-minimal sur RedHat/Rocky si présent
+  ansible.builtin.yum:
+    name: curl-minimal
+    state: absent
+  when: is_redhat
+
+- name: Installer les dépendances système
+  ansible.builtin.package:
+    name:
+      - git
+      - curl
+    state: present
+
+- name: Installer Node.js sur Debian/Ubuntu
+  ansible.builtin.shell: |
+    curl -fsSL https://deb.nodesource.com/setup_{{ nodejs_version }} | bash -
+    apt-get install -y nodejs
+  when: is_debian
+
+- name: Installer Node.js sur RedHat/Rocky
+  ansible.builtin.shell: |
+    curl -fsSL https://rpm.nodesource.com/setup_{{ nodejs_version }} | bash -
+    dnf install -y nodejs
+  when: is_redhat
+
+- name: Cloner le dépôt de l'application
+  ansible.builtin.git:
+    repo: "{{ repo_url }}"
+    dest: "{{ app_dir }}"
+    version: HEAD
+
+- name: Installer les dépendances Node.js
+  ansible.builtin.shell: npm install
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: Builder l'application
+  ansible.builtin.shell: npm run build
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: Installer serve globalement
+  ansible.builtin.shell: npm install -g serve
+
+- name: Lancer l'application avec serve (méthode simple)
+  ansible.builtin.shell: |
+    cd {{ app_dir }}
+    nohup serve -s dist -l {{ serve_port | default(3000) }} > {{ app_dir }}/serve.log 2>&1 &
+  changed_when: false

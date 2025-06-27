@@ -1,0 +1,28 @@
+---
+galaxy_info:
+  role_name: ansible_role_nodejs
+  namespace: khalidouatik
+  author: khalidouatik
+  description: >-
+    Rôle Ansible pour déployer automatiquement une application Node.js sur Debian, Ubuntu et Rocky Linux.
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Debian
+      versions: ["10", "11", "12"]
+    - name: Ubuntu
+      versions: ["20.04", "22.04"]
+    - name: EL
+      versions: ["8", "9"]
+  galaxy_tags:
+    - nodejs
+    - app
+    - web
+    - deployment
+    - ansible
+    - devops
+    - linux
+    - system
+    - automation
+
+dependencies: []
